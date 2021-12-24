@@ -8,6 +8,8 @@ using KoreanQuestionMark.BotConfig;
 using KoreanQuestionMark.Logging;
 using KoreanQuestionMark.Commands;
 
+using StdictAPI;
+
 namespace KoreanQuestionMark
 {
     class Program
@@ -26,10 +28,14 @@ namespace KoreanQuestionMark
             {
                 config = Config.Make();
             }
+            
             _client = new DiscordSocketClient();
             _client.SlashCommandExecuted += SlashCommandExecuted;
             _client.Log += Logging.Logging.Log;
             _client.Ready += Ready;
+            _client.SelectMenuExecuted += SelectMenuExecuted;
+
+            KoreanDictionary.NewStdict(config.StdictKey);
 
             await _client.LoginAsync(TokenType.Bot, config.Token);
             await _client.StartAsync();
@@ -76,9 +82,18 @@ namespace KoreanQuestionMark
                     await command.RespondAsync("테스트 성공");
                     break;
                 case "국어사전":
-                    await KoreanDictionary.Search(command, config.StdictKey);
+                    await KoreanDictionary.Search(command);
                     break;
                 
+            }
+        }
+        private async Task SelectMenuExecuted(SocketMessageComponent component)
+        {
+            switch(component.Data.CustomId)
+            {
+                case "MoreView":
+                    await KoreanDictionary.MoreSearch(component);
+                    break;
             }
         }
     }

@@ -4,7 +4,8 @@ namespace StdictAPI
     
     class Stdict
     {
-        const string apiUrl = "https://stdict.korean.go.kr/api/search.do";
+        const string searchApiUrl = "https://stdict.korean.go.kr/api/search.do";
+        const string viewApiUrl = "https://stdict.korean.go.kr/api/view.do";
         private readonly string key;
         public Stdict(string key)
         {
@@ -12,13 +13,34 @@ namespace StdictAPI
         }
         public SimpleWord[] Search(string q)
         {
-            string url = $"{apiUrl}?key={key}&q={q}&req_type=json&num=100";
+            string url = $"{searchApiUrl}?key={key}&q={q}&req_type=json&num=25";
             string json = new HttpClient().GetStringAsync(url).Result;
             JArray items = JObject.Parse(json)["channel"]["item"] as JArray;
             List<SimpleWord> words = new List<SimpleWord>();
             foreach (var item in items)
             {
                 words.Add(new SimpleWord(item["word"].ToString(), (int)item["sup_no"], item["pos"].ToString(), (int)item["target_code"], item["sense"]["definition"].ToString()));
+            }
+            return words.ToArray();
+        }
+        public DetailWord[] MoreSearch(int targetCode)
+        {
+            string url = $"{viewApiUrl}?key={key}&method=target_code&req_type=json&q={targetCode}&type_search=view"; //type_search는 문서에 없는데 없으면 에러;;
+            Console.WriteLine(url);
+            string json = new HttpClient().GetStringAsync(url).Result;
+            // Console.WriteLine(json);
+            JObject obj = JObject.Parse(json)["channel"]["item"]["word_info"] as JObject;
+            JArray means = obj["pos_info"][0]["comm_pattern_info"][0]["sense_info"] as JArray;
+            List<DetailWord> words = new List<DetailWord>();
+            foreach (var mean in means)
+            {
+                JArray exampleInfos = mean["example_info"] as JArray;
+                string[] examples = exampleInfos == null ? new string[0] : new string[exampleInfos.Count];
+                for (int i = 0; i < examples.Length; i++)
+                {
+                    examples[i] = exampleInfos[i]["example"].ToString();
+                }
+                words.Add(new DetailWord(obj["word"].ToString(), examples, mean["definition"].ToString()));
             }
             return words.ToArray();
         }
@@ -59,6 +81,31 @@ namespace StdictAPI
             _targetCode = targetCode;
             _definition = definition;
         }
+    }
+    struct DetailWord //사전보기로 나오는 단어
+    {
+        string _word;
+        string[] _examples;
+        string _definition;
+        public string Word
+        {
+            get { return _word; }
+        }
+        public string[] Examples
+        {
+            get { return _examples; }
+        }
+        public string Definition
+        {
+            get { return _definition; }
+        }
+        public DetailWord(string word, string[] examples, string definition)
+        {
+            _word = word;
+            _examples = examples;
+            _definition = definition;
+        }
+
     }
     // public enum 품사 //영단어를 몰?루
     // {

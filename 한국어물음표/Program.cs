@@ -26,8 +26,10 @@ namespace KoreanQuestionMark
                 config = Config.Make();
             }
             _client = new DiscordSocketClient();
+            _client.SlashCommandExecuted += SlashCommandExecuted;
             _client.Log += Logging.Logging.Log;
             _client.Ready += Ready;
+
             await _client.LoginAsync(TokenType.Bot, config.Token);
             await _client.StartAsync();
             await Task.Delay(-1);
@@ -35,6 +37,7 @@ namespace KoreanQuestionMark
         private async Task Ready()
         {
             await MakeSlashCommand();
+
         }
         private async Task MakeSlashCommand()
         {
@@ -47,6 +50,23 @@ namespace KoreanQuestionMark
                     await guild.CreateApplicationCommandAsync(testCommand.Build());
                 }
             }
+            else
+            {
+                await _client.CreateGlobalApplicationCommandAsync(testCommand.Build());
+            }
+        }
+        private async Task SlashCommandExecuted(SocketSlashCommand command)
+        {
+            if(config.ForTest && !config.Testers.Contains(command.User.Id))
+            {
+                Console.WriteLine("잘못된 사용자");
+                return;
+            } 
+            if(command.CommandName == "테스트")
+            {
+                await command.RespondAsync("테스트!");
+            }
+            else await command.RespondAsync("테스트 실패");
         }
     }
 }

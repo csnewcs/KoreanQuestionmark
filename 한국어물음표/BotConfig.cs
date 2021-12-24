@@ -5,6 +5,7 @@ namespace KoreanQuestionMark.BotConfig
     struct Config //봇의 설정들읠 제어하는 곳
     {
         string _token;
+        string _stdictKey;
         ulong[] _testers;
         ulong[] _testGuilds;
         bool _forTest; //true: testGuilds, owners만 사용 가능
@@ -12,6 +13,10 @@ namespace KoreanQuestionMark.BotConfig
         public string Token
         {
             get { return _token; }
+        }
+        public string StdictKey
+        {
+            get { return _stdictKey; }
         }
         public ulong[] Testers
         {
@@ -26,9 +31,10 @@ namespace KoreanQuestionMark.BotConfig
             get { return _forTest; }
         }
 
-        public Config(string token, ulong[] testers, ulong[] testGuilds, bool forTest)
+        public Config(string token, string stdictKey , ulong[] testers, ulong[] testGuilds, bool forTest)
         {
             _token = token;
+            _stdictKey = stdictKey;
             _testers = testers;
             _testGuilds = testGuilds;
             _forTest = forTest;
@@ -40,6 +46,7 @@ namespace KoreanQuestionMark.BotConfig
                 JObject configJson = JObject.Parse(File.ReadAllText(path));
                 Config config = new Config(
                     configJson["token"].ToString(),
+                    configJson["stdictKey"].ToString(),
                     configJson["testers"].ToObject<ulong[]>(),
                     configJson["testGuilds"].ToObject<ulong[]>(),
                     (bool)configJson["forTest"]
@@ -53,8 +60,10 @@ namespace KoreanQuestionMark.BotConfig
         }
         public static Config Make()
         {
-            Console.WriteLine("봇의 토큰을 입력하세요.");
+            Console.WriteLine("디스코드 봇의 토큰을 입력하세요.");
             string token = Console.ReadLine();
+            Console.WriteLine("표준국어대사전의 API 키를 입력하세요.");
+            string stdictKey = Console.ReadLine();
             Console.WriteLine("봇의 테스터들의 ID를 입력하세요. (여러 개의 ID를 입력하려면 /로 구분하세요.)");
             string[] testers = Console.ReadLine().Split('/');
             ulong[] uTesters = new ulong[testers.Length];
@@ -74,12 +83,13 @@ namespace KoreanQuestionMark.BotConfig
 
             JObject json = new JObject();
             json["token"] = token;
+            json["stdictKey"] = stdictKey;
             json["testers"] = JArray.FromObject(uTesters);
             json["testGuilds"] = JArray.FromObject(uTestGuilds);
             json["forTest"] = onlyTest;
             File.WriteAllText("BotConfig.json", json.ToString());
             Console.WriteLine("설정이 완료되었습니다.");
-            return new Config(token, uTesters, uTestGuilds, onlyTest);
+            return new Config(token, stdictKey, uTesters, uTestGuilds, onlyTest);
         }
     }
 }

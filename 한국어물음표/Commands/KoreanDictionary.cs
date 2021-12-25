@@ -45,6 +45,11 @@ namespace KoreanQuestionMark.Commands
             var targetCode = component.Data.Values.First();
             await component.UpdateAsync(m => {m.Content = "검색 중...";  m.Components = null;});
             DetailWord[] words = _stdict.MoreSearch(int.Parse(targetCode));
+            if(words.Length == 0)
+            {
+                await component.ModifyOriginalResponseAsync(m => {m.Content = "표준국어대사전 오류. 응답이 없습니다.";});
+                return;
+            }
             EmbedBuilder builder = new EmbedBuilder();
             for(int i = 0; i < words.Length; i++)
             {

@@ -84,6 +84,9 @@ namespace KoreanQuestionMark
                 case "국어사전":
                     await KoreanDictionary.Search(command);
                     break;
+                case "문법검사":
+                    await GrammerCheck.Check(command);
+                    break;
                 
             }
         }

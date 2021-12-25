@@ -15,6 +15,10 @@ namespace StdictAPI
         {
             string url = $"{searchApiUrl}?key={key}&q={q}&req_type=json&num=25";
             string json = new HttpClient().GetStringAsync(url).Result;
+            if(string.IsNullOrEmpty(json))
+            {
+                return new SimpleWord[0];
+            }
             JArray items = JObject.Parse(json)["channel"]["item"] as JArray;
             List<SimpleWord> words = new List<SimpleWord>();
             foreach (var item in items)
@@ -28,6 +32,10 @@ namespace StdictAPI
             string url = $"{viewApiUrl}?key={key}&method=target_code&req_type=json&q={targetCode}&type_search=view"; //type_search는 문서에 없는데 없으면 에러;;
             Console.WriteLine(url);
             string json = new HttpClient().GetStringAsync(url).Result;
+            if(string.IsNullOrEmpty(json))
+            {
+                return new DetailWord[0];
+            }
             // Console.WriteLine(json);
             JObject obj = JObject.Parse(json)["channel"]["item"]["word_info"] as JObject;
             JArray means = obj["pos_info"][0]["comm_pattern_info"][0]["sense_info"] as JArray;

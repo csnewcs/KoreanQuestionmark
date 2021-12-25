@@ -53,8 +53,9 @@ namespace KoreanQuestionMark.Commands
             EmbedBuilder builder = new EmbedBuilder();
             for(int i = 0; i < words.Length; i++)
             {
-                string exampleAdd = words[i].Examples.Length == 0 ? "```" : $"\n\n예문\n\t- {string.Join("\n\t-", words[i].Examples)}```";
-                builder.AddField($"{i+1}. {words[i].Word}", $"```뜻: {words[i].Definition}" + exampleAdd);
+                string pronunciation = words[i].Pronunciation == null ? "" : $"발음: [{words[i].Pronunciation}]\n";
+                string exampleAdd = words[i].Examples.Length == 0 ? "```" : $"\n\n예문\n\t-{string.Join("\n\t-", words[i].Examples)}```";
+                builder.AddField($"{i+1}. {words[i].Word}", $"```{pronunciation}뜻: {words[i].Definition}" + exampleAdd);
             }
             await component.ModifyOriginalResponseAsync(m => {m.Embed = builder.Build(); m.Content = "";});
         }

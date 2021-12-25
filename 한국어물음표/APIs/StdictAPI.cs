@@ -48,7 +48,7 @@ namespace StdictAPI
                 {
                     examples[i] = exampleInfos[i]["example"].ToString();
                 }
-                words.Add(new DetailWord(obj["word"].ToString(), examples, mean["definition"].ToString()));
+                words.Add(new DetailWord(obj["word"].ToString(), examples, mean["definition"].ToString(), obj["pronunciation_info"]?[0]?["pronunciation"]?.ToString()));
             }
             return words.ToArray();
         }
@@ -95,6 +95,7 @@ namespace StdictAPI
         string _word;
         string[] _examples;
         string _definition;
+        string? _pronunciation; //발음
         public string Word
         {
             get { return _word; }
@@ -107,11 +108,16 @@ namespace StdictAPI
         {
             get { return _definition; }
         }
-        public DetailWord(string word, string[] examples, string definition)
+        public string? Pronunciation
+        {
+            get { return _pronunciation; }
+        }
+        public DetailWord(string word, string[] examples, string definition, string? pronunciation)
         {
             _word = word;
             _examples = examples;
             _definition = definition;
+            _pronunciation = pronunciation;
         }
 
     }

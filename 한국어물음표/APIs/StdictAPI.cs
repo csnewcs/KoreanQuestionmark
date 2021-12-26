@@ -15,6 +15,7 @@ namespace StdictAPI
         {
             string url = $"{searchApiUrl}?key={key}&q={q}&req_type=json&num=25&advanced=y&pos={pos}";
             string json = new HttpClient().GetStringAsync(url).Result;
+            // Console.WriteLine(json);
             if(string.IsNullOrEmpty(json) || json == "{}")
             {
                 return new SimpleWord[0];
@@ -23,7 +24,7 @@ namespace StdictAPI
             List<SimpleWord> words = new List<SimpleWord>();
             foreach (var item in items)
             {
-                words.Add(new SimpleWord(item["word"].ToString(), (int)item["sup_no"], item["pos"].ToString(), (int)item["target_code"], item["sense"]["definition"].ToString().Replace("<sup style='font-size:11px;'>", "^").Replace("</sup>", "").Replace("<br>", "").Replace("<br/>", "")));
+                words.Add(new SimpleWord(item["word"].ToString(), (int)item["sup_no"], item["pos"].ToString(), (int)item["target_code"], item["sense"]["definition"].ToString().Replace("<sup style='font-size:11px;'>", "^").Replace("</sup>", "").Replace("<sub style='font-size:11px;'>", "v").Replace("</sub>", "")));
             }
             return words.ToArray();
         }
@@ -48,7 +49,7 @@ namespace StdictAPI
                 {
                     examples[i] = exampleInfos[i]["example"].ToString();
                 }
-                words.Add(new DetailWord(obj["word"].ToString(), examples, mean["definition"].ToString().Replace("<sup style='font-size:11px;'>", "^").Replace("</sup>", "").Replace("<br>", "").Replace("<br/>", ""), obj["pronunciation_info"]?[0]?["pronunciation"]?.ToString()));
+                words.Add(new DetailWord(obj["word"].ToString(), examples, mean["definition"].ToString().Replace("<sup style='font-size:11px;'>", "^").Replace("</sup>", "").Replace("<sub style='font-size:11px;'>", "v").Replace("</sub>", ""), obj["pronunciation_info"]?[0]?["pronunciation"]?.ToString()));
             }
             return words.ToArray();
         }

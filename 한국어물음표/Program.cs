@@ -49,6 +49,7 @@ namespace KoreanQuestionMark
         private async Task MakeSlashCommand()
         {
             var posSelectOption = new SlashCommandOptionBuilder().WithRequired(false).WithName("품사선택").WithDescription("검색할 단어의 품사를 선택하세요.").WithType(ApplicationCommandOptionType.Integer).AddChoice("모두", 0).AddChoice("명사", 1).AddChoice("대명사", 2).AddChoice("수사", 3).AddChoice("조사", 4).AddChoice("동사", 5).AddChoice("형용사", 6).AddChoice("관형사", 7).AddChoice("부사", 8).AddChoice("감탄사", 9).AddChoice("접사", 10).AddChoice("의존 명사", 11).AddChoice("보조 동사", 12).AddChoice("보조 형용사", 13).AddChoice("어미", 14).AddChoice("품사 없음", 15);
+
             var pingCommand = new SlashCommandBuilder().WithName("핑").WithDescription("핑을 날려요. 지연시간도 확인해 보세요.");
             var helpCommand = new SlashCommandBuilder().WithName("도움말").WithDescription("이 봇을 어떻게 쓰는 지 모르겠다고요? 이거 부터 한 번 써보세요!");
             var koreanDictionarySearch = new SlashCommandBuilder().WithName("국어사전").WithDescription("국어사전에서 단어를 검색해요!").AddOption("검색어", ApplicationCommandOptionType.String, "무엇을 검색할 것인지 알려주세요", true).AddOption(posSelectOption); //.AddOption(new SlashCommandOptionBuilder().WithName("9품사").WithDescription("검색할 단어의 품사를 선택하세요").WithRequired(false).AddChoice("모두", 0).AddChoice("명사", 1).AddChoice("대명사", 2).AddChoice("수사", 3).AddChoice("동사", 4).AddChoice("형용사", 5).AddChoice("관형사", 6).AddChoice("부사", 7).AddChoice("조사", 8).AddChoice("감탄사", 9))     9품사 검색기능은 나중에\
@@ -86,6 +87,9 @@ namespace KoreanQuestionMark
 
             switch (command.CommandName)
             {
+                case "도움말":
+                    await Help.HelpCommand(command);
+                    break;
                 case "핑":
                     await Ping.PingCommand(command);
                     break;

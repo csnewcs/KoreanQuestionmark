@@ -21,7 +21,8 @@ namespace KoreanQuestionMark.Commands
             EmbedBuilder embed = new EmbedBuilder()
             .AddField("입력", $"```{source}```")
             .AddField("결과", $"```{result}```")
-            .WithFooter($"출처: 네이버 맞춤법검사기, {corrected}개의 부분 맞춤법 의심, 교정 전 {source.Length}자, 교정 후 {result.Length}자");
+            .WithFooter($"출처: 네이버 맞춤법검사기, {corrected}개의 부분 맞춤법 의심, 교정 전 {source.Length}자, 교정 후 {result.Length}자")
+            .WithColor(corrected == 0 ? Color.Green : Color.Red);
             await command.ModifyOriginalResponseAsync(m => {m.Embed = embed.Build(); m.Content = "";});
         }
     }

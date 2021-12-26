@@ -16,7 +16,7 @@ namespace KoreanQuestionMark.Commands
                 return;    
             }
             string result = "";
-            await command.RespondAsync("검사 중...");
+            await command.RespondAsync("검사 중...", ephemeral: true);
             int corrected = NaverGrammer.CheckGrammer(source, out result);
             EmbedBuilder embed = new EmbedBuilder()
             .AddField("입력", $"```{source}```")

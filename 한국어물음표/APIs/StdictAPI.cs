@@ -11,11 +11,11 @@ namespace StdictAPI
         {
             this.key = key;
         }
-        public SimpleWord[] Search(string q)
+        public SimpleWord[] Search(string q, long pos = 0)
         {
-            string url = $"{searchApiUrl}?key={key}&q={q}&req_type=json&num=25";
+            string url = $"{searchApiUrl}?key={key}&q={q}&req_type=json&num=25&advanced=y&pos={pos}";
             string json = new HttpClient().GetStringAsync(url).Result;
-            if(string.IsNullOrEmpty(json))
+            if(string.IsNullOrEmpty(json) || json == "{}")
             {
                 return new SimpleWord[0];
             }
@@ -23,14 +23,14 @@ namespace StdictAPI
             List<SimpleWord> words = new List<SimpleWord>();
             foreach (var item in items)
             {
-                words.Add(new SimpleWord(item["word"].ToString(), (int)item["sup_no"], item["pos"].ToString(), (int)item["target_code"], item["sense"]["definition"].ToString()));
+                words.Add(new SimpleWord(item["word"].ToString(), (int)item["sup_no"], item["pos"].ToString(), (int)item["target_code"], item["sense"]["definition"].ToString().Replace("<sup style='font-size:11px;'>", "^").Replace("</sup>", "").Replace("<br>", "").Replace("<br/>", "")));
             }
             return words.ToArray();
         }
         public DetailWord[] MoreSearch(int targetCode)
         {
             string url = $"{viewApiUrl}?key={key}&method=target_code&req_type=json&q={targetCode}&type_search=view"; //type_search는 문서에 없는데 없으면 에러;;
-            Console.WriteLine(url);
+            // Console.WriteLine(url);
             string json = new HttpClient().GetStringAsync(url).Result;
             if(string.IsNullOrEmpty(json))
             {
@@ -48,7 +48,7 @@ namespace StdictAPI
                 {
                     examples[i] = exampleInfos[i]["example"].ToString();
                 }
-                words.Add(new DetailWord(obj["word"].ToString(), examples, mean["definition"].ToString(), obj["pronunciation_info"]?[0]?["pronunciation"]?.ToString()));
+                words.Add(new DetailWord(obj["word"].ToString(), examples, mean["definition"].ToString().Replace("<sup style='font-size:11px;'>", "^").Replace("</sup>", "").Replace("<br>", "").Replace("<br/>", ""), obj["pronunciation_info"]?[0]?["pronunciation"]?.ToString()));
             }
             return words.ToArray();
         }

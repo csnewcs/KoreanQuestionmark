@@ -15,9 +15,10 @@ namespace KoreanQuestionMark.Commands
         }
         public static async Task Search(SocketSlashCommand command)
         {
-            await command.RespondAsync("검색 중...");
-            string q = command.Data.Options.First().Value.ToString();
-            SimpleWord[] words = _stdict.Search(q);
+            await command.RespondAsync("검색 중...", ephemeral: true);
+            var options = command.Data.Options;
+            string q = options.First().Value.ToString();
+            SimpleWord[] words = _stdict.Search(q, options.Count > 1 ? (long)options.Last().Value : 0);
 
             if(words.Length == 0)
             {

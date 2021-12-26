@@ -55,7 +55,7 @@ namespace KoreanQuestionMark
             var koreanDictionarySearch = new SlashCommandBuilder().WithName("국어사전").WithDescription("국어사전에서 단어를 검색해요!").AddOption("검색어", ApplicationCommandOptionType.String, "무엇을 검색할 것인지 알려주세요", true).AddOption(posSelectOption); //.AddOption(new SlashCommandOptionBuilder().WithName("9품사").WithDescription("검색할 단어의 품사를 선택하세요").WithRequired(false).AddChoice("모두", 0).AddChoice("명사", 1).AddChoice("대명사", 2).AddChoice("수사", 3).AddChoice("동사", 4).AddChoice("형용사", 5).AddChoice("관형사", 6).AddChoice("부사", 7).AddChoice("조사", 8).AddChoice("감탄사", 9))     9품사 검색기능은 나중에\
             var grammerCheck = new SlashCommandBuilder().WithName("맞춤법검사").WithDescription("맞춤법, 문법이 헷갈리시면 사용해주세요!").AddOption("문장", ApplicationCommandOptionType.String, "어떤 문장(들)을 검사할건지 적어주세요", true);
             var licenses = new SlashCommandBuilder().WithName("라이선스").WithDescription("이 봇이 사용하는 오픈소스 라이선스들을 알려줘요.");
-            if(config.ForTest)
+            if(config.onlyTestGuilds)
             {
                 for(int i = 0; i < config.TestGuilds.Length; i++)
                 {
@@ -79,7 +79,7 @@ namespace KoreanQuestionMark
         }
         private async Task SlashCommandExecuted(SocketSlashCommand command)
         {
-            if(config.ForTest && !config.Testers.Contains(command.User.Id)) //테스트 상황에서 테스터 아닌 사람 거르기
+            if(config.onlyTesteUsers && !config.Testers.Contains(command.User.Id)) //테스트 상황에서 테스터 아닌 사람 거르기
             {
                 await command.RespondAsync("지금 이 봇은 테스트 중이라 일반 사용자분들은 사용하실 수 없어요.");
                 return;
@@ -99,7 +99,9 @@ namespace KoreanQuestionMark
                 case "맞춤법검사":
                     await GrammerCheck.Check(command);
                     break;
-                
+                case "라이선스":
+                    await Licenses.ViewLicenses(command);
+                    break;                
             }
         }
         private async Task SelectMenuExecuted(SocketMessageComponent component)

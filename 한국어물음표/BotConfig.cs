@@ -8,7 +8,8 @@ namespace KoreanQuestionMark.BotConfig
         string _stdictKey;
         ulong[] _testers;
         ulong[] _testGuilds;
-        bool _forTest; //true: testGuilds, owners만 사용 가능
+        bool _onlyTestGuilds;
+        bool _onlyTesteUsers;
         
         public string Token
         {
@@ -26,18 +27,22 @@ namespace KoreanQuestionMark.BotConfig
         {
             get { return _testGuilds; }
         }
-        public bool ForTest
+        public bool onlyTestGuilds
         {
-            get { return _forTest; }
+            get { return _onlyTestGuilds; }
         }
-
-        public Config(string token, string stdictKey , ulong[] testers, ulong[] testGuilds, bool forTest)
+        public bool onlyTesteUsers
+        {
+            get { return _onlyTesteUsers; }
+        }
+        public Config(string token, string stdictKey , ulong[] testers, ulong[] testGuilds, bool onlyTestGuilds, bool onlyTestUsers)
         {
             _token = token;
             _stdictKey = stdictKey;
             _testers = testers;
             _testGuilds = testGuilds;
-            _forTest = forTest;
+            _onlyTestGuilds = onlyTestGuilds;
+            _onlyTesteUsers = onlyTestUsers;
         }
         public static Config Load(string path)
         {
@@ -49,7 +54,8 @@ namespace KoreanQuestionMark.BotConfig
                     configJson["stdictKey"].ToString(),
                     configJson["testers"].ToObject<ulong[]>(),
                     configJson["testGuilds"].ToObject<ulong[]>(),
-                    (bool)configJson["forTest"]
+                    (bool)configJson["onlyTestGuilds"],
+                    (bool)configJson["onlyTestUsers"]
                 );
                 return config;
             }
@@ -78,18 +84,20 @@ namespace KoreanQuestionMark.BotConfig
             {
                 uTestGuilds[i] = ulong.Parse(testGuilds[i]);
             }
-            Console.WriteLine("이 봇을 테스터들만 테스트용 서버에서만 사용할 수 있도록 설정할까요? (y/N)");
-            bool onlyTest = Console.ReadLine() == "y" ? true : false;
-
+            Console.WriteLine("이 봇을 테스트용 서버에서만 사용할 수 있도록 설정할까요? (y/N)");
+            bool onlyTestGuilds = Console.ReadLine() == "y" ? true : false;
+            Console.WriteLine("이 봇을 테스터만 사용할 수 있도록 설정할까요? (y/N)");
+            bool onlyTestUsers = Console.ReadLine() == "y" ? true : false;
             JObject json = new JObject();
             json["token"] = token;
             json["stdictKey"] = stdictKey;
             json["testers"] = JArray.FromObject(uTesters);
             json["testGuilds"] = JArray.FromObject(uTestGuilds);
-            json["forTest"] = onlyTest;
+            json["onlyTestGuilds"] = onlyTestGuilds;
+            json["onlyTestUsers"] = onlyTestUsers;
             File.WriteAllText("BotConfig.json", json.ToString());
             Console.WriteLine("설정이 완료되었습니다.");
-            return new Config(token, stdictKey, uTesters, uTestGuilds, onlyTest);
+            return new Config(token, stdictKey, uTesters, uTestGuilds, onlyTestGuilds, onlyTestUsers);
         }
     }
 }
